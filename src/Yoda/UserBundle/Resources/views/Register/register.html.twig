@@ -3,7 +3,7 @@
 {% block stylesheets %}
     {{ parent() }}
 
-    <link rel="stylesheet" href="{{ asset('bundles/framework/css/login.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/bundles/framework/css/login.css') }}" />
 {% endblock %}
 
 {% block body %}
@@ -14,7 +14,7 @@
             <article>
                 <h1>Please Register</h1>
 
-                <form action="{{ path('user_register') }}" method="POST">
+                <form action="{{ path('user_register') }}" method="POST" novalidate="novalidate">
                     {{ form_errors(form) }}
 
                     {{ form_row(form.username) }}

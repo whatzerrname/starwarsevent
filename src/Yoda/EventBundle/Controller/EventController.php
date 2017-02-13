@@ -8,6 +8,8 @@ use Yoda\EventBundle\Entity\Event;
 use Yoda\EventBundle\Form\EventType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 
 /**
  * Event controller.
@@ -35,33 +37,35 @@ class EventController extends Controller
         ));
 
     }
-    
-    /**
-     * Creates a new Event entity.
-     *
-     */
-    public function createAction(Request $request)
-    {
-        $this->enforceUserSecurity('ROLE_EVENT_CREATE');
 
-        $entity = new Event();
-        $form = $this->createCreateForm($entity);
-        $form->handleRequest($request);
+//    /**
+//     * Creates a new Event entity. IS NEVER CALLED
+//     *
+//     */
+//    public function createAction(Request $request)
+//    {
+//        $this->enforceUserSecurity('ROLE_EVENT_CREATE');
+//
+//        $entity = new Event();
+//        $form = $this->createCreateForm($entity);
+//        $form->handleRequest($request);
+//
+//        if ($form->isValid()) {
+//            $user = $this->getUser();
+//
+//            $entity->setOwner($user);
+//
+//            $em = $this->getDoctrine()->getManager();
+//            $em->persist($entity);
+//            $em->flush();
+//            return $this->redirect($this->generateUrl('/{id}/show', array('id' => $entity->getId())));
+//        }
+//        return $this->render('EventBundle:Event:new.html.twig', array(
+//            'entity' => $entity,
+//            'form'   => $form->createView(),
+//        ));
+//    }
 
-        if ($form->isValid()) {
-            $user = $this->getUser();
-            $entity->setOwner($user);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
-            $em->flush();
-            return $this->redirect($this->generateUrl('/{id}/show', array('id' => $entity->getId())));
-        }
-        return $this->render('EventBundle:Event:new.html.twig', array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        ));
-    }
     /**
      * Creates a form to create a Event entity.
      *
@@ -93,7 +97,10 @@ class EventController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $em = $this->getDoctrine()->getManager();
+            $user = $this->getUser();
+            $event->setOwner($user);
             $em->persist($event);
             $em->flush();
 
@@ -104,6 +111,15 @@ class EventController extends Controller
             'event' => $event,
             'form' => $form->createView(),
         ));
+    }
+
+    private function enforceOwnerSecurity(Event $event)
+    {
+        $user = $this->getUser();
+
+        if ($user != $event->getOwner()) {
+            throw $this->createAccessDeniedException('You are not the owner!!!');
+        }
     }
 
     /**
