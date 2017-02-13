@@ -1,0 +1,43 @@
+{% extends '::base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="{{ asset('bundles/framework/css/login.css') }}" />
+{% endblock %}
+
+{% block body %}
+    <a class="link" href="{{ path('user_register') }}">Register</a>
+
+    <section class="login">
+        <article>
+
+            {% if error %}
+                <div>{{ error.message|trans }}</div>
+            {% endif %}
+
+            <h1>Please Login</h1>
+            <form action="{{ path('login_check') }}" method="post">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="_username" value="{{ last_username }}" />
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="_password" />
+
+                {#
+                    If you want to control the URL the user
+                    is redirected to on success (more details below)
+                    <input type="hidden" name="_target_path" value="/account" />
+                #}
+                <input type="hidden" name="_target_path" value="/" />
+
+                <hr/>
+                <label for="_remember_me">Remember Me:</label>
+                <input type="checkbox" name="_remember_me" id="_remember_me" />
+
+                <button type="submit">Login</button>
+            </form>
+
+        </article>
+    </section>
+{% endblock %}
